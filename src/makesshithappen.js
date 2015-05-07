@@ -25,17 +25,27 @@ var manager = new WebVRManager(renderer, effect, {hideButton: false});
 var light = new THREE.PointLight( 0xffffff, 1, 100);
 light.position.set( 0, 0, 0 );
 
-var starTexture = createAndInsertBackDrop('images/starfield.jpg', {x: 5, y: 5});
-var earthMesh = addEarth({x: 1, y: 0, z: -1});
-var mercury = addPlanet('mercury', {x: -10, y: 0, z: -3});
+var starTexture = createAndInsertBackDrop('images/starfield.jpg', {x: 5, y: 5}),
+    earthMesh = addEarth({x: 1, y: 0, z: -1}),
+    mercury = addPlanet('mercury', {x: -10, y: 0, z: -3}),
+    mars = addPlanet('mars', {x: 0, y: 2, z: 5}),
+    jupiter = addPlanet('jupiter', {x: 0, y: 2, z: -10}),
+    venus = addPlanet('venus', {x: 0, y: -2, z: -10}),
+    saturn = addPlanet('saturn', {x: 7, y: 9, z: 10}),
+    uranus = addPlanet('uranus', {x: -2, y: 4, z: -4}),
+    neptune = addPlanet('neptune', {x: 0, y: -12, z: 2}),
+    pluto = addPlanet('pluto', {x: 0, y: -2, z: 12});
 
-addToScene(scene, [light, earthMesh, mercury]);
+everyThing = [light, earthMesh, mercury, mars, jupiter, venus, saturn,
+              uranus, neptune, pluto];
+
+addToScene(scene, everyThing);
 
 var back;
 
 // Request animation frame loop function
 function animate() {
-  moveEverything();
+  moveEverythingExcept(0);
   // Update VR headset position and apply to camera.
   controls.update();
 
@@ -48,6 +58,8 @@ function animate() {
 // Kick off animation loop
 animate();
 
+
+
 // Reset the position sensor when 'z' pressed.
 function onKey(event) {
   if (event.keyCode == 90) { // z
@@ -57,33 +69,27 @@ function onKey(event) {
 
 window.addEventListener('keydown', onKey, true);
 
-function moveEverything(){
-  var rspeed = 0.01;
-  var speed = 0.01;
+function moveEverythingExcept(index){
+  var rspeed = 0.01,
+      speed = 0.01;
 
-  earthMesh.rotation.y += rspeed;
-  mercury.rotation.y += rspeed;
-  if(back){
-    earthMesh.position.z -= speed;
-    earthMesh.position.x -= speed;
-    mercury.position.z -= speed;
-    mercury.position.x -= speed;
-
-  } else {
-    earthMesh.position.z += speed;
-    earthMesh.position.x += speed;
-    mercury.position.z += speed;
-    mercury.position.x += speed;
-
-  }
-
+  everyThing.forEach(function(obj, i){
+    if(index !== i){
+      obj.rotation.y += rspeed;
+      if(back){
+        obj.position.z -= speed;
+        obj.position.x -= speed;
+      } else {
+        obj.position.z += speed;
+        obj.position.x += speed;
+      }
+    }
+  });
   if(earthMesh.position.z < -5){
     back = false;
   } else if(earthMesh.position.z > 5){
     back = true;
   }
-
-
 }
 
 // Handle window resizes
